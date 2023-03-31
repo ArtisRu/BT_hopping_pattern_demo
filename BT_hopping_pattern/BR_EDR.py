@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 # Copyright 2016 Dominic Spill, Michael Ossmann, Will Code
 
@@ -18,7 +18,7 @@ class Piconet(object):
 		# actual frequency is 2402 + channel[i] MHz
 		self.channels = [
 			(i * 2) % BT_NUM_CHANNELS
-			for i in xrange(BT_NUM_CHANNELS)
+			for i in range(BT_NUM_CHANNELS)
 		]
 	
 	
@@ -46,15 +46,15 @@ class Piconet(object):
 		index2 = (1, 3, 2, 4, 4, 3, 2, 4, 4, 3, 4, 3, 3, 2)
 	
 		# bits of p_low and p_high are control signals
-		p = [(p_low >> i) & 0x01 for i in xrange(9)]
-		p.extend([(p_high >> i) & 0x01 for i in xrange(5)])
+		p = [(p_low >> i) & 0x01 for i in range(9)]
+		p.extend([(p_high >> i) & 0x01 for i in range(5)])
 		
 		# bit swapping will be easier with an array of bits
-		z_bit = [(z >> i) & 0x01 for i in xrange(5)]
+		z_bit = [(z >> i) & 0x01 for i in range(5)]
 			
 	
 		# butterfly operations
-		for i in xrange(13, 0, -1):
+		for i in range(13, 0, -1):
 			# swap bits according to index arrays if control signal tells us to
 			if (p[i]):
 				tmp = z_bit[index1[i]]
@@ -62,12 +62,12 @@ class Piconet(object):
 				z_bit[index2[i]] = tmp
 	
 		# reconstruct output from rearranged bits
-		output = sum([z_bit[i] << i for i in xrange(5)])
+		output = sum([z_bit[i] << i for i in range(5)])
 		return output
 	
 	def perm_table_init(self):
 		# populate perm_table for all possible inputs
-		self.perm_table = [[[self.perm5(z, p_high, p_low) for p_low in xrange(0x200)]for p_high in xrange(0x20)] for z in xrange(0x20)]
+		self.perm_table = [[[self.perm5(z, p_high, p_low) for p_low in range(0x200)]for p_high in range(0x20)] for z in range(0x20)]
 	
 	# drop-in replacement for perm5() using lookup table
 	def fast_perm(self, z, p_high, p_low):
@@ -78,19 +78,19 @@ class Piconet(object):
 		# a, b, c, d, e, f, x, y1, y2 are variable names used in section 2.6 of the spec
 		# sequence index = clock >> 1
 		f = base_f = 0
-		for h in xrange(0x04):
+		for h in range(0x04):
 			#clock bits
-			for i in xrange(0x20):
+			for i in range(0x20):
 				# clock bits 21-25
 				a = self.a1 ^ i
-				for j in xrange(0x20):
+				for j in range(0x20):
 					# clock bits 16-20
 					c = self.c1 ^ j
 					c_flipped = c ^ 0x1f
-					for k in xrange(0x200):
+					for k in range(0x200):
 						# clock bits 7-15
 						d = self.d1 ^ k
-						for x in xrange(0x20):
+						for x in range(0x20):
 							# clock bits 2-6
 							perm_in = ((x + a) % 32) ^ self.b
 							# y1 (clock bit 1) = 0, y2 = 0
@@ -110,12 +110,12 @@ class Piconet(object):
 if __name__ == '__main__':
 	import sys
 	if len(sys.argv) < 2:
-		print "Using default address of 00:00:65:87:CB:A9"
+		print("Using default address of 00:00:65:87:CB:A9")
 		address = 0x6587cba9
 	else:
 		address = int(sys.argv[1].replace(':',''), 16)
 	pn = Piconet(address)
 	for x, channel in enumerate(pn.gen_hops()):
-		print "%02d" % channel
+		print("%02d" % channel)
 		if x > 20:
 			sys.exit()

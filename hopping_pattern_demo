@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 # Copyright 2016 Dominic Spill
 
@@ -25,7 +25,7 @@ def animated_barplot(count, fig, pattern, bars, waterfall):
 		previous_channel = channels.pop()
 		waterfall[previous_channel[0]].set_color('white')
 		waterfall[previous_channel[0]].set_height(0)
-	freq, direction = pattern.next()
+	freq, direction = next(pattern)
 	channels.insert(0, (freq-2400, direction))
 	for idx, timeslot in enumerate(channels):
 		channel, direction = timeslot
@@ -67,9 +67,9 @@ def addr_to_mac(address):
 		 address & 0xFF)
 
 def bluetooth_classic_pattern(address):
-	print "Performing hopping pattern pre-calculations"
+	print("Performing hopping pattern pre-calculations")
 	pn = BR_EDR.Piconet(address)
-	print "Pre-calculations complete"
+	print("Pre-calculations complete")
 	pattern = pn.gen_hops()
 	title = 'Bluetooth Hopping Pattern for ' + addr_to_mac(address)
 	draw_pattern(title, pattern)
@@ -78,7 +78,7 @@ if __name__ == '__main__':
 	import sys
 	if len(sys.argv) < 2:
 		address = 0x6587cba9
-		print "Using default address of " + addr_to_mac(address)
+		print("Using default address of " + addr_to_mac(address))
 	else:
 		address = int(sys.argv[1].replace(':',''), 16)
 	bluetooth_classic_pattern(address)
